@@ -50,7 +50,7 @@ function DashboardPage() {
       <header className='border-b bg-background'>
         <div className='container mx-auto flex h-16 items-center justify-between px-6 sm:px-8'>
           <Link to='/' className='font-semibold tracking-tight'>
-            My App
+            Cardy
           </Link>
           <Button variant='outline' asChild>
             <Link to='/'>Back home</Link>

@@ -1,10 +1,12 @@
 {
   "name": "layerwise-app",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@11.20.0",
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "test": "node --test tests/*.test.mjs",
     "dev": "vite dev",
     "check-types": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",

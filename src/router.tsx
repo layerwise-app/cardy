@@ -6,7 +6,14 @@ import { DefaultCatchBoundary } from './components/DefaultCatchBoundary'
 import { NotFound } from './components/NotFound'
 
 export function getRouter() {
-  const queryClient = new QueryClient()
+  // Same-origin RPCs can still work when an embedded browser reports offline.
+  // Attempt them immediately so failed requests show errors instead of queuing.
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { networkMode: 'always' },
+      mutations: { networkMode: 'always' },
+    },
+  })
 
   const router = createRouter({
     routeTree,
