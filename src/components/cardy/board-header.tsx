@@ -118,7 +118,7 @@ export function BoardHeader({
         </div>
         <div className='ml-auto flex items-center gap-2'>
           {data.members.length > 0 && (
-            <span className='hidden -space-x-1.5 sm:flex'>
+            <span className='hidden -space-x-0.5 sm:flex'>
               {data.members.slice(0, 4).map((member) => (
                 <PersonAvatar key={member.id} name={member.name} />
               ))}

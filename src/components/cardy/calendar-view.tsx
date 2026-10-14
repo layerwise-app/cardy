@@ -128,7 +128,7 @@ export function CalendarView({ cards }: { cards: Card[] }) {
             ))}
           </div>
           <div
-            className='grid flex-1 grid-cols-7'
+            className='thin-scrollbar grid min-h-0 flex-1 grid-cols-7 overflow-y-auto'
             style={{ gridTemplateRows: `repeat(${weeks.length}, minmax(6.5rem, 1fr))` }}
           >
             {weeks.flat().map((day) => {
