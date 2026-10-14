@@ -99,7 +99,7 @@ export function BoardView({
                 onDragStart={() => setDragging({ type: 'list', id: list.id })}
                 onDragEnd={endDrag}
               />
-              <div className='thin-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto px-2 pb-2'>
+              <div className='thin-scrollbar -mt-1 flex min-h-0 scroll-py-1 flex-col gap-2 overflow-y-auto px-2 pt-1 pb-2'>
                 {shown.map((card) => {
                   const position = listCards.findIndex((c) => c.id === card.id);
                   return (

@@ -178,7 +178,7 @@ function SidebarBody({
             <Plus />
           </Button>
         </div>
-        <nav aria-label='Boards' className='thin-scrollbar -mx-1 flex min-h-0 flex-col gap-px overflow-y-auto px-1'>
+        <nav aria-label='Boards' className='thin-scrollbar -m-1 flex min-h-0 scroll-py-1 flex-col gap-px overflow-y-auto p-1'>
           {active.map((board) => (
             <BoardLink
               key={board.id}
@@ -260,7 +260,7 @@ function NavItem({
       aria-current={active ? 'page' : undefined}
       onClick={onClick}
       className={cn(
-        'flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] text-muted-foreground transition-colors outline-none hover:bg-sidebar-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 [&_svg]:size-4',
+        'relative flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] text-muted-foreground transition-colors outline-none hover:bg-sidebar-accent hover:text-foreground focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50 [&_svg]:size-4',
         active && 'bg-sidebar-accent font-medium text-foreground'
       )}
     >
@@ -288,7 +288,7 @@ function BoardLink({
       aria-current={active ? 'page' : undefined}
       onClick={onClick}
       className={cn(
-        'group flex h-8 shrink-0 items-center gap-2.5 rounded-md px-2 text-[13px] text-muted-foreground transition-colors outline-none hover:bg-sidebar-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50',
+        'group relative flex h-8 shrink-0 items-center gap-2.5 rounded-md px-2 text-[13px] text-muted-foreground transition-colors outline-none hover:bg-sidebar-accent hover:text-foreground focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50',
         active && 'bg-white font-medium text-foreground shadow-xs ring-1 ring-border hover:bg-white'
       )}
     >

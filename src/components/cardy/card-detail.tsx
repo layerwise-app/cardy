@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Archive, ArchiveRestore, X } from 'lucide-react';
+import { Archive, ArchiveRestore, Command, CornerDownLeft, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '~/components/ui/button';
 import {
@@ -129,7 +129,7 @@ export function CardDetail({ card, onClose }: { card: Card; onClose: () => void 
         <DialogTitle className='sr-only'>{card.title}</DialogTitle>
         <DialogDescription className='sr-only'>Card details, checklist and comments</DialogDescription>
 
-        <div className='thin-scrollbar grid min-h-0 flex-1 overflow-y-auto md:grid-cols-[minmax(0,1fr)_260px]'>
+        <div className='thin-scrollbar grid min-h-0 flex-1 scroll-py-1 overflow-y-auto md:grid-cols-[minmax(0,1fr)_260px]'>
           <div className='flex min-w-0 flex-col gap-6 p-5 sm:p-6'>
             <Textarea
               aria-label='Card title'
@@ -292,9 +292,18 @@ export function CardDetail({ card, onClose }: { card: Card; onClose: () => void 
                 <Button variant='ghost' size='sm' disabled={saving} onClick={() => setDraft(toDraft(card))}>
                   Reset
                 </Button>
-                <SubmitButton size='sm' isPending={saving} disabled={!draft.title.trim()} onClick={() => void save()}>
+                <SubmitButton
+                  size='sm'
+                  isPending={saving}
+                  disabled={!draft.title.trim()}
+                  aria-keyshortcuts='Meta+Enter Control+Enter'
+                  onClick={() => void save()}
+                >
                   Save
-                  <kbd className='ml-1 font-mono text-[10px] opacity-70'>⌘↵</kbd>
+                  <kbd aria-hidden='true' className='inline-flex h-5 items-center gap-px rounded bg-white/20 px-1'>
+                    <Command className='size-3' />
+                    <CornerDownLeft className='size-3' />
+                  </kbd>
                 </SubmitButton>
               </>
             )}

@@ -55,7 +55,7 @@ export function ListView({
     );
 
   return (
-    <div className='thin-scrollbar overflow-x-auto'>
+    <div className='thin-scrollbar -mt-1 overflow-x-auto pt-1'>
       <table className='w-full min-w-[720px] border-separate border-spacing-0 text-[13px]'>
         <thead>
           <tr>

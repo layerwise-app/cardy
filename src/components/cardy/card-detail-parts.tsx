@@ -140,12 +140,14 @@ export function Conversation({
   }
   return (
     <Tabs defaultValue='comments' className='gap-3'>
-      <TabsList variant='line' className='h-8 border-b border-border p-0'>
-        <TabsTrigger value='comments' className='flex-none px-1 text-[13px]'>
+      <TabsList className='h-8'>
+        <TabsTrigger value='comments' className='px-3 text-[13px]'>
           Comments
-          <span className='font-mono text-[11px] text-faint'>{comments.length}</span>
+          <span className='min-w-4 rounded-full bg-foreground/8 px-1 text-[11px] leading-4 tabular-nums'>
+            {comments.length}
+          </span>
         </TabsTrigger>
-        <TabsTrigger value='activity' className='flex-none px-1 text-[13px]'>
+        <TabsTrigger value='activity' className='px-3 text-[13px]'>
           Activity
         </TabsTrigger>
       </TabsList>

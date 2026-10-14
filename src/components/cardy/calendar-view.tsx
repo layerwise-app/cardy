@@ -176,7 +176,7 @@ export function CalendarView({ cards }: { cards: Card[] }) {
             No due date
             <span className='font-mono text-faint'>{undated.length}</span>
           </h3>
-          <div className='thin-scrollbar flex min-h-0 flex-col gap-1 overflow-y-auto'>
+          <div className='thin-scrollbar -m-1 flex min-h-0 scroll-py-1 flex-col gap-1 overflow-y-auto p-1'>
             {undated.map((card) => (
               <CalendarPill key={card.id} card={card} {...dragProps(card)} />
             ))}

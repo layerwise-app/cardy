@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { ArchiveRestore, Copy, Globe2, LockKeyhole } from 'lucide-react';
+import { ArchiveRestore, Command, Copy, CornerDownLeft, Globe2, LockKeyhole } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '~/components/ui/button';
 import {
@@ -246,12 +246,13 @@ export function ArchivedCardsDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-const SHORTCUTS: [string[], string][] = [
+const SHORTCUTS: [ReactNode[], string][] = [
   [['/'], 'Search cards'],
   [['N'], 'New card'],
   [['?'], 'Keyboard shortcuts'],
   [['Esc'], 'Close or clear'],
-  [['⌘', '↵'], 'Save card'],
+  // Icons instead of ⌘↵ glyphs, which fall back to a font that renders them tiny and off-center.
+  [[<Command className='size-3' />, <CornerDownLeft className='size-3' />], 'Save card'],
 ];
 
 export function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
@@ -264,8 +265,8 @@ export function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenC
             <li key={label} className='flex items-center justify-between text-[13px]'>
               {label}
               <span className='flex gap-1'>
-                {keys.map((key) => (
-                  <Kbd key={key}>{key}</Kbd>
+                {keys.map((key, index) => (
+                  <Kbd key={index}>{key}</Kbd>
                 ))}
               </span>
             </li>

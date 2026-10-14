@@ -16,7 +16,7 @@ export function InsightsView({ cards }: { cards: Card[] }) {
   const workloadMax = Math.max(1, ...insights.workload.map((row) => row.open));
 
   return (
-    <div className='thin-scrollbar min-h-0 flex-1 overflow-y-auto'>
+    <div className='thin-scrollbar min-h-0 flex-1 overflow-y-auto focus-visible:outline-offset-[-2px]'>
       <div className='flex max-w-6xl flex-col gap-4 px-4 py-5 sm:px-6'>
         <div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>
           <Stat label='Open' value={insights.open} detail={`of ${insights.total} cards`} />

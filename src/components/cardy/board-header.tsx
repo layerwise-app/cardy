@@ -148,7 +148,9 @@ export function BoardHeader({
           onValueChange={(value) => onViewChange(VIEWS.find((v) => v.value === value)?.value ?? 'board')}
           className='min-w-0'
         >
-          <TabsList variant='line' className='thin-scrollbar h-9 max-w-full gap-3 overflow-x-auto p-0'>
+          {/* The list keeps its 3px padding (offset by a negative margin) so the scroller doesn't clip focus
+              rings; justify-start keeps overflowing tabs reachable by scrolling. */}
+          <TabsList variant='line' className='thin-scrollbar -m-[3px] box-content h-9 max-w-full scroll-px-1 justify-start gap-3 overflow-x-auto'>
             {VIEWS.map(({ value, label, icon: Icon }) => (
               <TabsTrigger
                 key={value}
