@@ -1,0 +1,434 @@
+/* Landing-page motion and the animated hero board. App UI uses Tailwind only. */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+}
+
+/* Hidden only after the reveal hook has mounted, so content never depends on JS. */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.reveal-ready [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.landing-grid {
+  background-image: radial-gradient(#dcd7ee 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 100%);
+}
+
+.lift {
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.25s ease,
+    border-color 0.2s ease;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -12px rgb(40 24 120 / 0.18);
+}
+
+.nudge svg {
+  transition: transform 0.2s ease;
+}
+.nudge:hover svg {
+  transform: translateX(3px);
+}
+
+/* Hero board: a card travels To do → In progress → Done on a 12s loop. */
+.hb {
+  --gap: 12px;
+  --slot-top: 34px;
+  --slot-height: 146px;
+  width: 600px;
+}
+
+.hb-cols {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.hb-slot {
+  height: var(--slot-height);
+  border-radius: 10px;
+  border: 1.5px dashed transparent;
+}
+.hb-col:nth-child(2) .hb-slot {
+  animation: hb-slot-2 12s infinite;
+}
+.hb-col:nth-child(3) .hb-slot {
+  animation: hb-slot-3 12s infinite;
+}
+
+.hb-mover {
+  position: absolute;
+  top: var(--slot-top);
+  left: 0;
+  width: calc((100% - 2 * var(--gap)) / 3);
+  height: var(--slot-height);
+  animation: hb-move 12s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  will-change: transform;
+}
+
+.hb-check {
+  animation: 12s infinite;
+}
+.hb-check:nth-child(1) {
+  animation-name: hb-tick-1;
+}
+.hb-check:nth-child(2) {
+  animation-name: hb-tick-2;
+}
+.hb-check:nth-child(3) {
+  animation-name: hb-tick-3;
+}
+.hb-check svg {
+  animation: 12s infinite;
+}
+.hb-check:nth-child(1) svg {
+  animation-name: hb-mark-1;
+}
+.hb-check:nth-child(2) svg {
+  animation-name: hb-mark-2;
+}
+.hb-check:nth-child(3) svg {
+  animation-name: hb-mark-3;
+}
+
+.hb-progress {
+  animation: hb-progress 12s infinite;
+}
+.hb-avatar {
+  animation: hb-avatar 12s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
+}
+.hb-cursor {
+  animation: hb-cursor 12s infinite;
+}
+.hb-done-badge {
+  animation: hb-done 12s infinite;
+}
+
+@keyframes hb-move {
+  0%,
+  10% {
+    transform: none;
+    box-shadow: 0 1px 2px rgb(23 21 31 / 0.06);
+    opacity: 1;
+  }
+  14% {
+    transform: translateY(-6px) rotate(-2deg) scale(1.03);
+    box-shadow: 0 18px 36px -12px rgb(60 30 160 / 0.35);
+  }
+  25% {
+    transform: translate(calc(100% + var(--gap)), -6px) rotate(-2deg) scale(1.03);
+    box-shadow: 0 18px 36px -12px rgb(60 30 160 / 0.35);
+  }
+  29%,
+  52% {
+    transform: translateX(calc(100% + var(--gap)));
+    box-shadow: 0 1px 2px rgb(23 21 31 / 0.06);
+  }
+  56% {
+    transform: translate(calc(100% + var(--gap)), -6px) rotate(2deg) scale(1.03);
+    box-shadow: 0 18px 36px -12px rgb(60 30 160 / 0.35);
+  }
+  67% {
+    transform: translate(calc(200% + 2 * var(--gap)), -6px) rotate(2deg) scale(1.03);
+    box-shadow: 0 18px 36px -12px rgb(60 30 160 / 0.35);
+  }
+  71%,
+  92% {
+    transform: translateX(calc(200% + 2 * var(--gap)));
+    box-shadow: 0 1px 2px rgb(23 21 31 / 0.06);
+    opacity: 1;
+  }
+  95% {
+    transform: translateX(calc(200% + 2 * var(--gap)));
+    opacity: 0;
+  }
+  96% {
+    transform: none;
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes hb-slot-2 {
+  0%,
+  15%,
+  29%,
+  100% {
+    border-color: transparent;
+    background: transparent;
+  }
+  19%,
+  27% {
+    border-color: #c9bcff;
+    background: #f6f3ff;
+  }
+}
+@keyframes hb-slot-3 {
+  0%,
+  58%,
+  71%,
+  100% {
+    border-color: transparent;
+    background: transparent;
+  }
+  61%,
+  69% {
+    border-color: #c9bcff;
+    background: #f6f3ff;
+  }
+}
+
+@keyframes hb-tick-1 {
+  0%,
+  33% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+  35%,
+  94% {
+    background: #6c47ff;
+    border-color: #6c47ff;
+  }
+  97%,
+  100% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+}
+@keyframes hb-tick-2 {
+  0%,
+  39% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+  41%,
+  94% {
+    background: #6c47ff;
+    border-color: #6c47ff;
+  }
+  97%,
+  100% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+}
+@keyframes hb-tick-3 {
+  0%,
+  45% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+  47%,
+  94% {
+    background: #6c47ff;
+    border-color: #6c47ff;
+  }
+  97%,
+  100% {
+    background: #fff;
+    border-color: #d9d6e4;
+  }
+}
+@keyframes hb-mark-1 {
+  0%,
+  33%,
+  97%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  36%,
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hb-mark-2 {
+  0%,
+  39%,
+  97%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  42%,
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hb-mark-3 {
+  0%,
+  45%,
+  97%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  48%,
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hb-progress {
+  0%,
+  33% {
+    transform: scaleX(0);
+  }
+  36%,
+  39% {
+    transform: scaleX(0.3333);
+  }
+  42%,
+  45% {
+    transform: scaleX(0.6667);
+  }
+  48%,
+  94% {
+    transform: scaleX(1);
+  }
+  97%,
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes hb-avatar {
+  0%,
+  30% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  33%,
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+  97%,
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+@keyframes hb-cursor {
+  0%,
+  9%,
+  30%,
+  51%,
+  72%,
+  100% {
+    opacity: 0;
+    transform: translate(6px, 6px);
+  }
+  12%,
+  26%,
+  54%,
+  68% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hb-done {
+  0%,
+  70% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  73%,
+  93% {
+    opacity: 1;
+    transform: none;
+  }
+  96%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* Scale the fixed-size mockup instead of reflowing it. */
+@media (min-width: 1100px) {
+  .hb {
+    zoom: 1.2;
+  }
+}
+@media (max-width: 720px) {
+  .hb {
+    zoom: 0.86;
+  }
+}
+@media (max-width: 560px) {
+  .hb {
+    zoom: 0.66;
+  }
+}
+@media (max-width: 440px) {
+  .hb {
+    zoom: 0.57;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .hb *,
+  .hb-mover {
+    animation: none !important;
+  }
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .lift,
+  .lift:hover,
+  .nudge svg {
+    transition: none;
+    transform: none;
+  }
+  .hb-check {
+    background: #6c47ff;
+    border-color: #6c47ff;
+  }
+  .hb-progress {
+    transform: none;
+  }
+  /* Park the static card in the middle column so the board still reads as in motion. */
+  .hb-mover {
+    transform: translateX(calc(100% + var(--gap)));
+  }
+  .hb-cursor {
+    opacity: 0;
+  }
+}

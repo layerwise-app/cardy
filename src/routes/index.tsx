@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { CardyApp } from '~/components/cardy/cardy-app';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { LandingPage } from '~/components/landing/landing-page';
+import { getAuthSession } from '~/lib/auth.functions';
 import { seo } from '~/utils/seo';
 
 export const Route = createFileRoute('/')({
@@ -9,19 +10,22 @@ export const Route = createFileRoute('/')({
     board: typeof search.board === 'string' ? search.board : undefined,
     invite: typeof search.invite === 'string' ? search.invite : undefined,
   }),
+  // Board and invitation links shared before the app moved to /app keep working.
+  beforeLoad: ({ search }) => {
+    if (search.board || search.invite) throw redirect({ to: '/app', search });
+  },
+  loader: async () => ({ signedIn: Boolean(await getAuthSession()) }),
   head: () => ({
     meta: seo({
-      title: 'Cardy | A little less chaos. A lot more clarity.',
+      title: 'Cardy | Plan the work. Watch it move.',
       description:
-        'A thoughtful home for your team’s tasks, ideas, and next big thing.',
+        'Boards with priorities, due dates and checklists, shared with your team.',
     }),
   }),
   component: Home,
 });
 
 function Home() {
-  const search = Route.useSearch();
-  return (
-    <CardyApp initialBoard={search.board} invitationToken={search.invite} />
-  );
+  const { signedIn } = Route.useLoaderData();
+  return <LandingPage signedIn={signedIn} />;
 }

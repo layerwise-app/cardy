@@ -123,6 +123,7 @@ export const card = sqliteTable('card', {
   labels: text('labels', { mode: 'json' }).$type<string[]>().notNull().default([]),
   assignees: text('assignees', { mode: 'json' }).$type<string[]>().notNull().default([]),
   dueDate: text('due_date'),
+  priority: text('priority', { enum: ['urgent', 'high', 'medium', 'low', 'none'] }).notNull().default('none'),
   checklist: text('checklist', { mode: 'json' }).$type<ChecklistItem[]>().notNull().default([]),
   cover: text('cover'),
   archived: integer('archived', { mode: 'boolean' }).notNull().default(false),

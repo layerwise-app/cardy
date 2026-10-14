@@ -19,6 +19,7 @@ const card = {
   labels: ['Design'],
   assignees: ['member-1'],
   dueDate: '2026-10-16',
+  priority: 'high',
   checklist: [{ id: 'item-1', title: 'First step', done: false }],
 };
 
@@ -78,9 +79,11 @@ test('accepts a complete, valid card update', () => {
   );
 });
 
-test('rejects invalid dates, labels, checklists and assignments', () => {
+test('rejects invalid dates, priorities, labels, checklists and assignments', () => {
   for (const dueDate of ['tomorrow', '2026-02-31', '2026-13-01', '', 123])
     assert.throws(() => validateAction({ ...card, dueDate }));
+  for (const priority of ['critical', '', null, undefined, 1])
+    assert.throws(() => validateAction({ ...card, priority }));
   for (const labels of [['Unknown'], ['Design', 'Design'], null, 'Design'])
     assert.throws(() => validateAction({ ...card, labels }));
   for (const assignees of [null, [123], ['x'.repeat(201)]])
@@ -115,6 +118,8 @@ test('rejects missing required fields and unknown operations', () => {
     'list.move',
     'card.create',
     'card.update',
+    'card.schedule',
+    'card.prioritize',
     'card.move',
     'card.archive',
     'comment.create',
@@ -198,4 +203,27 @@ test('date-only filters follow the local day, not UTC', () => {
     if (previous === undefined) delete process.env.TZ;
     else process.env.TZ = previous;
   }
+});
+
+test('quick schedule and priority changes validate their single field', () => {
+  const target = { boardId: 'board-1', cardId: 'card-1' };
+  for (const dueDate of ['2026-10-31', null])
+    assert.doesNotThrow(() =>
+      validateAction({ type: 'card.schedule', ...target, dueDate })
+    );
+  for (const dueDate of ['2026-02-30', 'soon', undefined])
+    assert.throws(() =>
+      validateAction({ type: 'card.schedule', ...target, dueDate })
+    );
+  for (const priority of ['urgent', 'none'])
+    assert.doesNotThrow(() =>
+      validateAction({ type: 'card.prioritize', ...target, priority })
+    );
+  for (const priority of ['High', undefined, null])
+    assert.throws(() =>
+      validateAction({ type: 'card.prioritize', ...target, priority })
+    );
+  assert.throws(() =>
+    validateAction({ type: 'card.prioritize', boardId: 'board-1', priority: 'low' })
+  );
 });

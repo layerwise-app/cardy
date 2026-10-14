@@ -22,9 +22,14 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      ...seo({ title: 'Cardy', description: 'A little less chaos. A lot more clarity.' })
+      ...seo({ title: 'Cardy', description: 'Boards, lists and cards for your team.' })
     ],
-    links: [{ rel: 'icon', href: '/cardy.svg', type: 'image/svg+xml' }]
+    links: [
+      { rel: 'icon', href: '/cardy.svg', type: 'image/svg+xml' },
+      { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'manifest', href: '/site.webmanifest' }
+    ]
   }),
   errorComponent: (props) => (
     <RootDocument>

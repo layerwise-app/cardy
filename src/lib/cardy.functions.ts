@@ -19,6 +19,7 @@ import {
   assertWorkspacePermission,
   getWorkspaceRole,
   nextPosition,
+  PRIORITY_LABELS,
   textInput,
   validateAction,
 } from './cardy.types';
@@ -97,30 +98,21 @@ async function seedDemo() {
   await db.batch([
     db
       .insert(workspace)
-      .values({ id: DEMO, name: 'Studio workspace', createdAt: now() })
+      .values({ id: DEMO, name: demoBoard.workspaceName, createdAt: now() })
       .onConflictDoNothing(),
     db
       .insert(board)
       .values({
         id: DEMO,
         workspaceId: DEMO,
-        name: 'Brand & website',
-        description:
-          'A fresh chapter for Cardy. Let’s make something people love.',
+        name: demoBoard.board.name,
+        description: demoBoard.board.description,
         visibility: 'public',
         createdAt: now(),
       })
       .onConflictDoNothing(),
-    ...['Ideas', 'In progress', 'In review', 'Done'].map((name, position) =>
-      db
-        .insert(boardList)
-        .values({
-          id: `${DEMO}-list-${position}`,
-          boardId: DEMO,
-          name,
-          position,
-        })
-        .onConflictDoNothing()
+    ...demoBoard.lists.map((list) =>
+      db.insert(boardList).values(list).onConflictDoNothing()
     ),
     ...demoBoard.cards.map((sample) =>
       db.insert(card).values(sample).onConflictDoNothing()
@@ -130,8 +122,7 @@ async function seedDemo() {
       .values({
         id: `${DEMO}-activity`,
         boardId: DEMO,
-        message:
-          'Welcome to the sample board. Create a workspace to make it your own.',
+        message: 'opened the sample board',
         createdAt: now(),
       })
       .onConflictDoNothing(),
@@ -332,7 +323,6 @@ export const mutateCardy = createServerFn({ method: 'POST' })
           id: boardId,
           workspaceId,
           name: 'My first board',
-          description: 'Big ideas start with a little first step.',
           createdAt: now(),
         }),
         ...['Ideas', 'In progress', 'In review', 'Done'].map((name, position) =>
@@ -558,11 +548,7 @@ export const mutateCardy = createServerFn({ method: 'POST' })
               createdAt: now(),
             })
           ),
-        activityInsert(
-          boardId,
-          viewer.id,
-          'duplicated this board; comments and history remain on the original'
-        ),
+        activityInsert(boardId, viewer.id, `duplicated “${found.name}”`),
       ]);
       return { id: boardId };
     }
@@ -664,10 +650,37 @@ export const mutateCardy = createServerFn({ method: 'POST' })
             labels: data.labels,
             assignees: [...new Set(data.assignees)],
             dueDate: data.dueDate,
+            priority: data.priority,
             checklist: data.checklist,
           })
           .where(eq(card.id, target.id)),
         activityInsert(found.id, viewer.id, 'updated this card', target.id),
+      ]);
+    } else if (data.type === 'card.schedule') {
+      await db.batch([
+        db
+          .update(card)
+          .set({ dueDate: data.dueDate })
+          .where(eq(card.id, target.id)),
+        activityInsert(
+          found.id,
+          viewer.id,
+          data.dueDate ? `set the due date to ${data.dueDate}` : 'cleared the due date',
+          target.id
+        ),
+      ]);
+    } else if (data.type === 'card.prioritize') {
+      await db.batch([
+        db
+          .update(card)
+          .set({ priority: data.priority })
+          .where(eq(card.id, target.id)),
+        activityInsert(
+          found.id,
+          viewer.id,
+          `set priority to ${PRIORITY_LABELS[data.priority].toLowerCase()}`,
+          target.id
+        ),
       ]);
     } else if (data.type === 'card.archive') {
       const peers =

@@ -4,13 +4,25 @@ export type Board = typeof board.$inferSelect;
 export type BoardList = typeof boardList.$inferSelect;
 export type Card = typeof card.$inferSelect;
 export const LABELS = [
-  { name: 'Design', color: 'lilac' },
+  { name: 'Design', color: 'purple' },
   { name: 'Product', color: 'blue' },
-  { name: 'Engineering', color: 'green' },
+  { name: 'Engineering', color: 'teal' },
   { name: 'Research', color: 'amber' },
   { name: 'Marketing', color: 'pink' },
-  { name: 'High priority', color: 'coral' },
+  { name: 'Bug', color: 'red' },
 ] as const;
+export type LabelColor = (typeof LABELS)[number]['color'];
+
+// Ordered from most to least pressing; list sorting relies on this order.
+export const PRIORITIES = ['urgent', 'high', 'medium', 'low', 'none'] as const;
+export type Priority = (typeof PRIORITIES)[number];
+export const PRIORITY_LABELS: Record<Priority, string> = {
+  urgent: 'Urgent',
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+  none: 'No priority',
+};
 
 export type Action =
   | { type: 'workspace.create'; name: string }
@@ -42,7 +54,20 @@ export type Action =
       labels: string[];
       assignees: string[];
       dueDate: string | null;
+      priority: Priority;
       checklist: Card['checklist'];
+    }
+  | {
+      type: 'card.schedule';
+      boardId: string;
+      cardId: string;
+      dueDate: string | null;
+    }
+  | {
+      type: 'card.prioritize';
+      boardId: string;
+      cardId: string;
+      priority: Priority;
     }
   | {
       type: 'card.move';
@@ -79,6 +104,17 @@ export function nextPosition(items: { position: number }[]): number {
 
 export function localDateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// Date-only values are stored as YYYY-MM-DD and must be real calendar days.
+export function isDueDate(value: unknown): value is string | null {
+  return (
+    value === null ||
+    (typeof value === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+      Number.isFinite(Date.parse(value)) &&
+      new Date(value).toISOString().slice(0, 10) === value)
+  );
 }
 
 export function getWorkspaceRole(value: unknown): 'owner' | 'member' | null {
@@ -133,6 +169,8 @@ export function validateAction(value: Action): Action {
     'list.move',
     'card.create',
     'card.update',
+    'card.schedule',
+    'card.prioritize',
     'card.move',
     'card.archive',
     'comment.create',
@@ -174,6 +212,16 @@ export function validateAction(value: Action): Action {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(data.email)))
       throw new Error('Enter a valid email address.');
   }
+  if (
+    (value.type === 'card.update' || value.type === 'card.schedule') &&
+    !isDueDate(value.dueDate)
+  )
+    throw new Error('Invalid due date.');
+  if (
+    (value.type === 'card.update' || value.type === 'card.prioritize') &&
+    !PRIORITIES.includes(value.priority)
+  )
+    throw new Error('Invalid priority.');
   if (value.type === 'card.update') {
     if (
       !Array.isArray(value.labels) ||
@@ -189,14 +237,6 @@ export function validateAction(value: Action): Action {
       value.assignees.some((id) => typeof id !== 'string' || id.length > 200)
     )
       throw new Error('Invalid assignees.');
-    if (
-      value.dueDate !== null &&
-      (typeof value.dueDate !== 'string' ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(value.dueDate) ||
-        !Number.isFinite(Date.parse(value.dueDate)) ||
-        new Date(value.dueDate).toISOString().slice(0, 10) !== value.dueDate)
-    )
-      throw new Error('Invalid due date.');
     if (!Array.isArray(value.checklist) || value.checklist.length > 100)
       throw new Error('Invalid checklist.');
     value.checklist = value.checklist.map((item) => {
@@ -222,9 +262,14 @@ export function validateAction(value: Action): Action {
   )
     textInput(data.boardId, 'Board ID', 200);
   if (
-    ['card.update', 'card.move', 'card.archive', 'comment.create'].includes(
-      value.type
-    )
+    [
+      'card.update',
+      'card.schedule',
+      'card.prioritize',
+      'card.move',
+      'card.archive',
+      'comment.create',
+    ].includes(value.type)
   )
     textInput(data.cardId, 'Card ID', 200);
   if (

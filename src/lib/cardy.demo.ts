@@ -1,101 +1,124 @@
 import type { BoardData } from './cardy.functions';
+import type { Card } from './cardy.types';
 
 const boardId = 'cardy-welcome';
-const entries = [
+const checklist = (items: Array<[string, boolean]>) =>
+  items.map(([title, done], index) => ({ id: `c${index}`, title, done }));
+
+const entries: Array<
+  Pick<Card, 'title' | 'description' | 'labels' | 'priority'> & {
+    list: number;
+    dueDate?: string;
+    checklist?: Card['checklist'];
+  }
+> = [
   {
-    title: 'Explore the next chapter of Cardy',
+    title: 'Interview five trial users',
     labels: ['Research'],
     list: 0,
-    description:
-      'Gather ideas, collect inspiration, and make room for the next big thing.',
-    cover: 'explore',
+    priority: 'medium',
+    description: 'Focus on the first week: what they set up and where they stopped.',
+    dueDate: '2026-10-23',
+    checklist: checklist([
+      ['Write the script', true],
+      ['Book sessions', true],
+      ['Run interviews', false],
+      ['Share findings', false],
+    ]),
   },
   {
-    title: 'Map out the onboarding journey',
-    labels: ['Product', 'Design'],
+    title: 'Audit pricing page copy',
+    labels: ['Marketing'],
     list: 0,
-    description:
-      'Make every first impression feel effortless. Sketch the flow from sign-up to the first completed task.',
+    priority: 'low',
+    description: 'Cut plan descriptions to one line each and align feature names.',
+    dueDate: '2026-10-28',
   },
   {
-    title: 'A little love for our empty states',
+    title: 'Add dark mode color tokens',
     labels: ['Design'],
     list: 0,
-    description:
-      'Helpful, human empty states that point people toward their next step.',
-    checklist: [
-      { id: 'a', title: 'Board empty state', done: true },
-      { id: 'b', title: 'Search empty state', done: false },
-      { id: 'c', title: 'Workspace empty state', done: false },
-    ],
+    priority: 'none',
+    description: '',
   },
   {
-    title: 'Design the new board experience',
-    labels: ['Design', 'High priority'],
+    title: 'Fix drag preview offset in Safari',
+    labels: ['Bug', 'Engineering'],
     list: 1,
-    description: 'Less friction. More focus. A calm home for every project.',
-    cover: 'board',
-    checklist: [
-      { id: 'a', title: 'Wireframes', done: true },
-      { id: 'b', title: 'Visual exploration', done: true },
-      { id: 'c', title: 'Prototype', done: false },
-      { id: 'd', title: 'Review', done: false },
-    ],
+    priority: 'urgent',
+    description: 'The ghost card jumps 40px left when the board is scrolled.',
+    dueDate: '2026-10-12',
+  },
+  {
+    title: 'Redesign the board header',
+    labels: ['Design', 'Product'],
+    list: 1,
+    priority: 'high',
+    description: 'Fold view tabs, filters and sharing into one compact row.',
     dueDate: '2026-10-16',
+    checklist: checklist([
+      ['Wireframes', true],
+      ['Visual pass', true],
+      ['Prototype', false],
+      ['Review', false],
+    ]),
   },
   {
-    title: 'Build a better card detail view',
+    title: 'Ship the calendar view',
     labels: ['Engineering'],
     list: 1,
-    description:
-      'Give every task the context it deserves: descriptions, dates, checklists, and conversations.',
-    dueDate: '2026-10-19',
+    priority: 'high',
+    description: 'Month grid of cards by due date with drag to reschedule.',
+    dueDate: '2026-10-20',
+    checklist: checklist([
+      ['Month grid', true],
+      ['Drag to reschedule', false],
+      ['Mobile agenda', false],
+    ]),
   },
   {
-    title: 'Write words that feel like us',
+    title: 'Onboarding email sequence',
     labels: ['Marketing'],
-    list: 1,
-    description: 'Keep it clear, thoughtful, and a little playful.',
+    list: 2,
+    priority: 'medium',
+    description: 'Three emails over the first week. Needs legal sign-off.',
+    dueDate: '2026-10-08',
   },
   {
-    title: 'Polish the workspace navigation',
-    labels: ['Design'],
+    title: 'Mobile navigation pass',
+    labels: ['Engineering', 'Design'],
     list: 2,
-    description:
-      'Review navigation hierarchy and workspace switching with the team.',
-    cover: 'palette',
+    priority: 'medium',
+    description: 'Sidebar becomes a sheet below 768px.',
     dueDate: '2026-10-14',
+    checklist: checklist([
+      ['Sheet navigation', true],
+      ['Touch targets', true],
+      ['Dialogs', true],
+    ]),
   },
   {
-    title: 'Make it work on the small screen',
-    labels: ['Engineering', 'Product'],
-    list: 2,
-    description: 'A great experience should fit in your pocket.',
-    checklist: [
-      { id: 'a', title: 'Mobile navigation', done: true },
-      { id: 'b', title: 'Touch controls', done: true },
-      { id: 'c', title: 'Responsive dialogs', done: true },
-    ],
-  },
-  {
-    title: 'Find our visual direction',
+    title: 'Choose the new type scale',
     labels: ['Design'],
     list: 3,
-    description: 'Warm colors, thoughtful details, and space to breathe.',
-    cover: 'direction',
+    priority: 'low',
+    description: 'Geist at 12, 13, 14, 16, 20 and 28.',
+    dueDate: '2026-10-06',
   },
   {
-    title: 'Set up the project foundations',
+    title: 'Set up error tracking',
     labels: ['Engineering'],
     list: 3,
-    description:
-      'React, TypeScript, and a solid foundation for a more organized day.',
+    priority: 'medium',
+    description: '',
+    dueDate: '2026-10-02',
   },
   {
-    title: 'Say hello to Cardy',
+    title: 'Draft the launch post',
     labels: ['Marketing'],
     list: 3,
-    description: 'A little less chaos. A lot more clarity.',
+    priority: 'none',
+    description: '',
   },
 ];
 
@@ -103,15 +126,15 @@ export const demoBoard: BoardData = {
   board: {
     id: boardId,
     workspaceId: boardId,
-    name: 'Brand & website',
-    description: 'A fresh chapter for Cardy. Let’s make something people love.',
+    name: 'Website relaunch',
+    description: 'Plan and ship the new marketing site.',
     visibility: 'public',
     archived: false,
     color: 'coral',
     createdAt: 1791504000000,
   },
-  workspaceName: 'Studio workspace',
-  lists: ['Ideas', 'In progress', 'In review', 'Done'].map(
+  workspaceName: 'Sample workspace',
+  lists: ['Backlog', 'In progress', 'In review', 'Done'].map(
     (name, position) => ({
       id: `${boardId}-list-${position}`,
       boardId,
