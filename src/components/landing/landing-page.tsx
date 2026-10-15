@@ -13,6 +13,7 @@ import {
   SharingFragment,
   ShortcutsTile,
 } from './feature-fragments';
+import { PoweredByLayerwise } from '~/components/powered-by-layerwise';
 import { HeroBoard } from './hero-board';
 
 // Feeds the --i stagger index used by the .rise and [data-reveal] transitions.
@@ -143,6 +144,9 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
           <Link to={signedIn ? '/app' : '/sign-in'} className='transition-colors hover:text-foreground'>
             {signedIn ? 'Open app' : 'Sign in'}
           </Link>
+        </div>
+        <div className='mx-auto flex max-w-6xl justify-center px-4 pb-6 sm:px-6'>
+          <PoweredByLayerwise />
         </div>
       </footer>
     </div>
