@@ -13,6 +13,7 @@ import {
   SharingFragment,
   ShortcutsTile,
 } from './feature-fragments';
+import { GitHubButton } from './github-button';
 import { PoweredByLayerwise } from '~/components/powered-by-layerwise';
 import { HeroBoard } from './hero-board';
 
@@ -28,6 +29,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
           <Link to='/' className='mr-auto rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/50'>
             <Logo />
           </Link>
+          <GitHubButton />
           {signedIn ? (
             <Button asChild size='sm'>
               <Link to='/app'>Open app</Link>

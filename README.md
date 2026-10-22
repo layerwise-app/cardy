@@ -1,5 +1,12 @@
 # Cardy
 
+<a href="https://layerwise.app">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://layerwise.app/powered-by-dark.png" />
+    <img src="https://layerwise.app/powered-by.png" alt="Powered by Layerwise" width="320" />
+  </picture>
+</a>
+
 Kanban boards for small teams: lists, cards, priorities, due dates, checklists, comments and sharing. Independently implemented with original branding and UI (MIT); Kan's public product was used only as behavioral research.
 
 React, TanStack Start and Query, Tailwind CSS, shadcn/ui, Better Auth, Drizzle ORM, Cloudflare D1 and Workers.
