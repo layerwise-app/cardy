@@ -146,3 +146,16 @@ export const activity = sqliteTable('activity', {
   message: text('message').notNull(),
   createdAt: integer('created_at').notNull(),
 }, (table) => [index('activity_board_idx').on(table.boardId)]);
+
+// Files live in Layerwise Storage; D1 keeps the key, never a URL.
+export const attachment = sqliteTable('attachment', {
+  id: text('id').primaryKey(),
+  cardId: text('card_id').notNull().references(() => card.id, { onDelete: 'cascade' }),
+  boardId: text('board_id').notNull().references(() => board.id, { onDelete: 'cascade' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+  key: text('key').notNull().unique(),
+  name: text('name').notNull(),
+  size: integer('size').notNull(),
+  contentType: text('content_type').notNull(),
+  createdAt: integer('created_at').notNull(),
+}, (table) => [index('attachment_card_idx').on(table.cardId)]);

@@ -32,7 +32,15 @@ const SECTION_TITLES: Record<Exclude<Section, 'board'>, string> = {
   archive: 'Archived boards',
 };
 
-export function CardyApp({ initialBoard, invitationToken }: { initialBoard?: string; invitationToken?: string }) {
+export function CardyApp({
+  initialBoard,
+  initialCard,
+  invitationToken,
+}: {
+  initialBoard?: string;
+  initialCard?: string;
+  invitationToken?: string;
+}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const session = useSession();
@@ -67,7 +75,8 @@ export function CardyApp({ initialBoard, invitationToken }: { initialBoard?: str
   const [filters, setFilters] = useState<CardFilters>(EMPTY_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [composerList, setComposerList] = useState<string | null>(null);
-  const [cardId, setCardId] = useState<string | null>(null);
+  // Email links open a card directly with ?card=<id>.
+  const [cardId, setCardId] = useState<string | null>(initialCard ?? null);
   const [dialog, setDialog] = useState<DialogName | null>(null);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -92,6 +101,12 @@ export function CardyApp({ initialBoard, invitationToken }: { initialBoard?: str
   const doneId = data ? doneListId(data.lists) : null;
   const selectedCard = data?.cards.find((card) => card.id === cardId);
   const closeDialog = () => setDialog(null);
+
+  function closeCard() {
+    setCardId(null);
+    if (initialCard)
+      void navigate({ to: '/app', search: { board: boardId, invite: invitationToken }, replace: true });
+  }
 
   function selectBoard(nextId: string) {
     setBoardId(nextId);
@@ -372,7 +387,7 @@ export function CardyApp({ initialBoard, invitationToken }: { initialBoard?: str
           }}
         >
           {app}
-          {selectedCard && <CardDetail key={selectedCard.id} card={selectedCard} onClose={() => setCardId(null)} />}
+          {selectedCard && <CardDetail key={selectedCard.id} card={selectedCard} onClose={closeCard} />}
           <MembersDialog open={dialog === 'members'} onOpenChange={(open) => setDialog(open ? 'members' : null)} />
           {dialog === 'settings' && <BoardSettingsDialog onClose={closeDialog} />}
           {dialog === 'share' && <ShareDialog onClose={closeDialog} onSettings={() => setDialog('settings')} />}

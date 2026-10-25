@@ -1,5 +1,4 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getRequestHeaders } from '@tanstack/react-start/server';
 import { and, asc, desc, eq, inArray, isNull, or } from 'drizzle-orm';
 import { db } from '~/db';
 import {
@@ -13,10 +12,8 @@ import {
   user,
   workspace,
 } from '~/db/schema';
-import { auth } from '~/lib/auth';
 import {
   assertBoardReadAccess,
-  assertWorkspacePermission,
   getWorkspaceRole,
   nextPosition,
   PRIORITY_LABELS,
@@ -24,48 +21,20 @@ import {
   validateAction,
 } from './cardy.types';
 import { demoBoard } from './cardy.demo';
+import { cardLink, newAssignees } from './cardy.email';
+import {
+  activityInsert,
+  appOrigin,
+  getSession,
+  id,
+  notifyAssignees,
+  now,
+  requireMember,
+  requireUser,
+  writableBoard,
+} from './cardy.server';
 
 const DEMO = 'cardy-welcome';
-const now = () => Date.now();
-const id = () => crypto.randomUUID();
-const getSession = () => auth.api.getSession({ headers: getRequestHeaders() });
-
-async function requireUser() {
-  const session = await getSession();
-  if (!session) throw new Error('Sign in to make changes.');
-  return session.user;
-}
-
-async function requireMember(
-  workspaceId: string,
-  userId: string,
-  owner = false
-) {
-  const [member] = await db
-    .select()
-    .from(membership)
-    .where(
-      and(
-        eq(membership.workspaceId, workspaceId),
-        eq(membership.userId, userId)
-      )
-    );
-  assertWorkspacePermission(member?.role, owner);
-  return member;
-}
-
-async function writableBoard(
-  boardId: string,
-  userId: string,
-  allowArchived = false
-) {
-  const [found] = await db.select().from(board).where(eq(board.id, boardId));
-  if (!found) throw new Error('Board not found.');
-  await requireMember(found.workspaceId, userId);
-  if (found.archived && !allowArchived)
-    throw new Error('Restore this board before editing it.');
-  return found;
-}
 
 async function hashToken(token: string) {
   const bytes = await crypto.subtle.digest(
@@ -75,17 +44,6 @@ async function hashToken(token: string) {
   return Array.from(new Uint8Array(bytes), (b) =>
     b.toString(16).padStart(2, '0')
   ).join('');
-}
-
-function activityInsert(
-  boardId: string,
-  userId: string | null,
-  message: string,
-  cardId: string | null = null
-) {
-  return db
-    .insert(activity)
-    .values({ id: id(), boardId, cardId, userId, message, createdAt: now() });
 }
 
 async function seedDemo() {
@@ -656,6 +614,16 @@ export const mutateCardy = createServerFn({ method: 'POST' })
           .where(eq(card.id, target.id)),
         activityInsert(found.id, viewer.id, 'updated this card', target.id),
       ]);
+      const assigned = newAssignees(target.assignees, data.assignees, viewer.id);
+      if (assigned.length)
+        notifyAssignees({
+          userIds: assigned,
+          // Email sign-in accounts can have an empty name.
+          actorName: viewer.name.trim() || viewer.email,
+          cardTitle: data.title,
+          boardName: found.name,
+          link: cardLink(appOrigin(), found.id, target.id),
+        });
     } else if (data.type === 'card.schedule') {
       await db.batch([
         db

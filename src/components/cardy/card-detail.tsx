@@ -21,6 +21,7 @@ import { cn } from '~/lib/utils';
 import { isOverdue } from '~/lib/cardy.board';
 import { PRIORITIES, PRIORITY_LABELS, type Card } from '~/lib/cardy.types';
 import { fire, useBoard } from './board-context';
+import { AttachmentList } from './card-attachments';
 import {
   AssigneePicker,
   ChecklistEditor,
@@ -127,7 +128,7 @@ export function CardDetail({ card, onClose }: { card: Card; onClose: () => void 
           </Button>
         </header>
         <DialogTitle className='sr-only'>{card.title}</DialogTitle>
-        <DialogDescription className='sr-only'>Card details, checklist and comments</DialogDescription>
+        <DialogDescription className='sr-only'>Card details, checklist, attachments and comments</DialogDescription>
 
         <div className='thin-scrollbar grid min-h-0 flex-1 scroll-py-1 overflow-y-auto md:grid-cols-[minmax(0,1fr)_260px]'>
           <div className='flex min-w-0 flex-col gap-6 p-5 sm:p-6'>
@@ -158,6 +159,7 @@ export function CardDetail({ card, onClose }: { card: Card; onClose: () => void 
               canEdit={canEdit}
               onChange={(checklist) => update({ checklist })}
             />
+            <AttachmentList card={card} canEdit={canEdit} />
             <Conversation card={card} canEdit={canEdit} comment={comment} setComment={setComment} />
           </div>
 

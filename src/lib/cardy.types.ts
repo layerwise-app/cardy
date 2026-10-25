@@ -151,6 +151,18 @@ export function assertBoardReadAccess(
     );
 }
 
+// Outsiders see only active cards on active public boards, as in loadBoard.
+export function assertCardReadAccess(
+  visibility: 'private' | 'public',
+  boardArchived: boolean,
+  cardArchived: boolean,
+  role: 'owner' | 'member' | null | undefined
+): void {
+  assertBoardReadAccess(visibility, boardArchived, role);
+  if (cardArchived && role !== 'owner' && role !== 'member')
+    throw new Error('Card not found.');
+}
+
 export function validateAction(value: Action): Action {
   if (!value || typeof value !== 'object') throw new Error('Invalid request.');
   const types = [
