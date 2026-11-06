@@ -1,15 +1,23 @@
+<a href="https://layerwise.app"><picture><source media="(prefers-color-scheme: dark)" srcset="https://layerwise.app/powered-by-dark.png"><img src="https://layerwise.app/powered-by.png" alt="Powered by Layerwise" width="174" height="28"></picture></a>
+
 # Cardy
 
-<a href="https://layerwise.app">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://layerwise.app/powered-by-dark.png" />
-    <img src="https://layerwise.app/powered-by.png" alt="Powered by Layerwise" width="320" />
-  </picture>
-</a>
+Cardy is a Kanban board app for small teams who want to plan work without a heavyweight project tool. Visitors can open a read-only sample board without signing up, then create an account to set up workspaces and boards, move cards between lists, set priorities and due dates, keep checklists, attach files, comment and share boards with teammates. Try the live demo at [cardy.layerwise.site](https://cardy.layerwise.site/).
 
-Kanban boards for small teams: lists, cards, priorities, due dates, checklists, comments and sharing. Independently implemented with original branding and UI (MIT); Kan's public product was used only as behavioral research.
+Cardy was built with [Layerwise](https://layerwise.app), and you can open it in Layerwise to make your own version.
 
 React, TanStack Start and Query, Tailwind CSS, shadcn/ui, Better Auth, Drizzle ORM, Cloudflare D1 and Workers, Layerwise Storage and Email.
+
+## Make it yours
+
+- **Landing page copy**: `src/components/landing/landing-page.tsx` (hero, feature sections, footer). The animated hero board is `src/components/landing/hero-board.tsx`, and the small feature illustrations are in `src/components/landing/feature-fragments.tsx`. The GitHub button's repository link is `REPO_URL` in `src/components/landing/github-button.tsx`.
+- **Page titles and descriptions**: the `seo(...)` calls in `src/routes/__root.tsx`, `src/routes/index.tsx` and `src/routes/app.tsx`.
+- **Colors and fonts**: theme variables (such as `--primary: #6c47ff`) in `src/styles/app.css`. Landing-page motion lives in `src/styles/landing.css`.
+- **Labels and priorities**: `LABELS` and `PRIORITIES` in `src/lib/cardy.types.ts`. To add a label, add `{ name, color }` to `LABELS`; a new color also needs an entry in `LABEL_DOT` in `src/components/cardy/cardy-ui.tsx`.
+- **Sample board**: the cards signed-out visitors see are in `src/lib/cardy.demo.ts`. To add a card, add an entry to `entries` with a `title`, `labels`, `list` (index of the list), `priority` and optional `description`, `dueDate` and `checklist`.
+- **Limits**: attachment size and count, and signed link lifetime, are constants at the top of `src/lib/cardy.attachments.ts`.
+- **Icons**: `public/cardy.svg`, `public/favicon.ico`, `public/apple-touch-icon.png` and `public/site.webmanifest`.
+- **Database schema**: `src/db/schema.ts`. Run `pnpm run db:generate` after changing it.
 
 ## Routes
 
@@ -54,3 +62,7 @@ Attachment uploads and deletes require workspace membership and an active board 
 ## Not included
 
 Other email notifications (comments, due dates), reminders and real-time collaboration. Data refetches after mutations and on window focus.
+
+## License
+
+MIT. See `LICENSE` and `THIRD_PARTY_NOTICES.md`.
